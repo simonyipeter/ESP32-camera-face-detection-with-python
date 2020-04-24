@@ -1,10 +1,10 @@
 # ESP32-camera-face-detection-with-python
 For Demonstration Purposes Only!
-The code based on the demo 
+The code based on the demo code of TTgo T-camera ESP32
 
 # How it is work?
 The ESP32 send images back to a python server, which dectects faces on the image and send back information to ESP32.
-The code was written to LILYGO® TTgo T-camera esp32 V17, but easy to modify to another version ESP32 camera board
+The code was written to LILYGO® TTgo T-camera ESP32 V17, but easy to modify to another version ESP32 camera board
 https://github.com/lewisxhe/esp32-camera-series
 
 Hopefully there is a PIR on this board, so it only sends image, when motian was detected.
@@ -30,7 +30,9 @@ it's possible to modify this configurations without restart or flash the ESP32.
 - esp_camera.h library
 
 # Install
-- Upload the .ino and selectfile to ESP32 board
+- Install docker
+- Start a pyton
+- Upload the .ino and select_pins.h file to ESP32 board
 - Start the .py file
 
 
