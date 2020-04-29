@@ -9,9 +9,9 @@ https://github.com/lewisxhe/esp32-camera-series
 
 Hopefully there is a PIR on this board, so it only sends image, when motian was detected.
 
-Face --> | PIR && T-camera ESP32 | --- Image in UDP packets    --- >|python server|
+Face ---> PIR && T-camera ESP32 --- Image in UDP packets ---> python server
 
-Face ---- | PIR && T-camera ESP32 |<--- Message in UDP packets  ---  |python server|
+Face ---- PIR && T-camera ESP32 <--- Message in UDP packets  --- python server
 
 This scenario is much slower than face detection on ESP32, but precise and versatile
 
@@ -30,9 +30,9 @@ it's possible to modify this configurations without restart or flash the ESP32.
 - esp_camera.h library
 
 # Install
-- Install docker
-- Start a pyton
+- Install docker enviroment: 
+- Start the pyton file in the container
 - Upload the .ino and select_pins.h file to ESP32 board
-- Start the .py file
+
 
 
