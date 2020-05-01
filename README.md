@@ -31,7 +31,11 @@ it's possible to modify this configurations without restart or flash the ESP32.
 
 # Install
 - Install docker enviroment: 
-- Start the pyton file in the container
+  https://github.com/simonyipeter/OpenCV4.3.0_FFmpeg
+- Start the container:
+
+- Start the pyton file in the container:
+  
 - Upload the .ino and select_pins.h file to ESP32 board
 
 
