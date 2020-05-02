@@ -36,7 +36,7 @@ it's possible to modify this configurations without restart or flash the ESP32.
  ```  
 - Install OpenCV environment or use docker:  https://github.com/simonyipeter/OpenCV4.3.0_FFmpeg to start the container:
  ``` 
-  docker run -itd -v $PWD/esp32_face_det.py:/home/host_dir/esp32_face_det.py --name opencv_ffmpeg opencv_ffmpeg
+  docker run -itd -v $PWD/esp32_face_det.py:/home/host_dir/esp32_face_det.py -p 8080:8080/udp --name opencv_ffmpeg opencv_ffmpeg
  ```  
 - Start the pyton file:
   ```
@@ -44,7 +44,7 @@ it's possible to modify this configurations without restart or flash the ESP32.
   ```
   or use the started container:
   ```
-  docker exec -it -p 8080:8080/udp opencv_ffmpeg python3 /home/host_dir/esp32_face_det.py
+  docker exec -it opencv_ffmpeg python3 /home/host_dir/esp32_face_det.py
   ```
 - Modify the .ino file:
 
