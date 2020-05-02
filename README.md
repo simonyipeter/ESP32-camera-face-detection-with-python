@@ -31,13 +31,13 @@ it's possible to modify this configurations without restart or flash the ESP32.
 
 # Install
 - Clone the repo:
- ```  
+  ```  
   git clone https://github.com/simonyipeter/ESP32-camera-face-detection-with-python.git && cd ESP32-camera-face-detection-with-python/
- ```  
+  ```  
 - Install OpenCV environment or use docker:  https://github.com/simonyipeter/OpenCV4.3.0_FFmpeg to start the container:
- ``` 
+  ``` 
   docker run -itd -v $PWD/esp32_face_det.py:/home/host_dir/esp32_face_det.py -p 8080:8080/udp --name opencv_ffmpeg opencv_ffmpeg
- ```  
+  ```  
 - Start the pyton file:
   ```
   python3 esp32_face_det.py
