@@ -9,13 +9,13 @@
 
 #define SOFTAP_MODE       //The comment will be connected to the specified ssid
 
-#define WIFI_SSID   "WL500gp"
-#define WIFI_PASSWD "simonyip"
+#define WIFI_SSID   "xxx"
+#define WIFI_PASSWD "xxx"
 
 String ipAddress = "";
 
-const char * udpAddress = "178.48.207.43";
-const int udpPort = 443;
+const char * udpAddress = "1.2.3.4";
+const int udpPort = 8080;
 //The udp library class
 WiFiUDP udp;
 
