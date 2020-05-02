@@ -9,9 +9,9 @@ https://github.com/lewisxhe/esp32-camera-series
 
 Hopefully there is a PIR on this board, so it only sends image, when motian was detected.
 
-Face ---> PIR && T-camera ESP32 --- Image in UDP packets ---> python server
+Face ---> T-camera ESP32 with PIR ----- Image in UDP packets -----> python server
 
-Face ---- PIR && T-camera ESP32 <--- Message in UDP packets  --- python server
+Face ---- T-camera ESP32 with PIR <--- Control message in UDP packets  --- python server
 
 This scenario is much slower than face detection on ESP32, but precise and versatile
 
@@ -21,8 +21,8 @@ it's possible to modify this configurations without restart or flash the ESP32.
 
 # Requirement on server side:
 - Python 3
-- OpenCV 3 <
-- FFmpeg (Optional to save to .mp4 )
+- OpenCV 3 or higher
+- FFmpeg (Optional to save the images into .mp4 video )
 
 # Requirement on Arduino IDE side:
 - ESP32 board support
@@ -30,11 +30,21 @@ it's possible to modify this configurations without restart or flash the ESP32.
 - esp_camera.h library
 
 # Install
-- Install docker enviroment: 
+- Clone the repo:
+  
+  git clone https://github.com/simonyipeter/ESP32-camera-face-detection-with-python.git && cd ESP32-camera-face-detection-with-python/
+  
+- Install OpenCV environment or use docker:
   https://github.com/simonyipeter/OpenCV4.3.0_FFmpeg
-- Start the container:
-
-- Start the pyton file in the container:
+  Start the container:
+  
+  docker run -itd -v $PWD/esp32_face_det.py:/home/host_dir/esp32_face_det.py --name opencv_ffmpeg opencv_ffmpeg
+   
+- Start the pyton file:
+  
+  python3 esp32_face_det.py
+  or use the started container:
+  docker exec -it -p 8080:8080/udp opencv_ffmpeg python3 /home/host_dir/esp32_face_det.py
   
 - Upload the .ino and select_pins.h file to ESP32 board
 
