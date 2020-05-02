@@ -17,7 +17,7 @@ ffmpeg_recording = False
 
 def capture(threadname):
  HOST = '0.0.0.0'      
- PORT = 443
+ PORT = 8080
  sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)    
  sock.bind((HOST, PORT))
  print ("Server running", HOST, PORT)
