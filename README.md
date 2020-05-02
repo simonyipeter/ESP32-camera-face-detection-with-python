@@ -49,8 +49,11 @@ it's possible to modify this configurations without restart or flash the ESP32.
 - Modify the .ino file:
 
 WIFI_SSID - the Wifi Access Point name, where the ESP32 is connecting.
+
 WIFI_PASSWD - the AP password
+
 udpAddress - the server address, where the python file is running.
+
 udpPort - server port, default 8080
 
 - Upload the .ino and select_pins.h file to ESP32 board
