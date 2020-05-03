@@ -8,22 +8,27 @@ from threading import Thread
 import requests
 import socket
 import array 
+import pathlib
 
 
-pics = {}
-lock_pics = False
 last_seen_face_time = time.time() +5
 ffmpeg_recording = False
+config_str = "config,FRAMESIZE_VGA,12,400,1400"; #Send config: command, resulution, Jpeg quality, time between frames in ms, MTU size in byte
+haar_path = "/usr/local/share/opencv4/haarcascades/haarcascade_frontalcatface.xml"
+
+abs_path = str( pathlib.Path(__file__).parent.absolute() )+"/"
+print(abs_path)
+pics = {}
 
 def capture(threadname):
  HOST = '0.0.0.0'      
- PORT = 8080
+ PORT = 443
  sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)    
  sock.bind((HOST, PORT))
  print ("Server running", HOST, PORT)
  global pics
- global lock_pics
  global last_seen_face_time
+ global config_str
   
  while True:
   
@@ -40,9 +45,8 @@ def capture(threadname):
     else:
      pics.update({  img_id: { "Fragments": fragments, "intime": time.time(), "data": { frag: data[6:] } }   })
    if data[0:2] == B"01" and data[2:4] == B"88": 
-    print("Config")  
-    response = "config,FRAMESIZE_VGA,12,400,1400"; #Send config: command, resulution, Jpeg quality, time between frames in ms, MTU size in byte
-    sent = sock.sendto(response.encode(), addr)
+    print("Config")     
+    sent = sock.sendto(config_str.encode(), addr)
    if data[0:2] == B"01" and data[2:4] == B"44": 
     if (time.time()-last_seen_face_time < 2) :
      print("Face detected")  
@@ -57,8 +61,9 @@ def capture(threadname):
 	
 def packet_mgmt(threadname):
  global pics
- global lock_pics
  global last_seen_face_time
+ global abs_path
+ global haar_path
  
  print_time = time.time()
 
@@ -69,8 +74,7 @@ def packet_mgmt(threadname):
  #ffmpeg_res = '1280x1024'
  #ffmpeg_res = '1600x1200'
  ffmpeg_bitr = '500k'
- path = os.path.abspath(os.getcwd())+"/"
- file = path+str(calendar.timegm(time.gmtime()))+'_video.mp4'
+ file = abs_path+str(calendar.timegm(time.gmtime()))+'_video.mp4'
  #print(file)
  command = [ '/usr/local/bin/ffmpeg',        #'-re',
         '-f', 'rawvideo', '-vcodec','rawvideo', '-s', ffmpeg_res,
@@ -79,7 +83,7 @@ def packet_mgmt(threadname):
   proc = sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE, bufsize=10**8)
 
  # Load the cascade
- face_cascade = cv2.CascadeClassifier('haar.xml')
+ face_cascade = cv2.CascadeClassifier(haar_path)
  
  while True:
 
@@ -104,13 +108,16 @@ def packet_mgmt(threadname):
 	 # Convert into grayscale
      gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	 # Detect faces
-     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-	 # Draw rectangle around the faces
-     for (x, y, w, h) in faces:
-       cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 1)
-       #print("face")
-       last_seen_face_time = time.time()
-     cv2.imwrite( os.path.abspath(os.getcwd())+"/pics.jpg", frame );
+     try:
+      faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+      # Draw rectangle around the faces
+      for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 1)
+        print("face")
+        last_seen_face_time = time.time()
+     except:
+      print("face decect error")
+     cv2.imwrite( abs_path+"pics.jpg", frame );
      try:
       if ffmpeg_recording:
        proc.stdin.write(frame)
@@ -134,7 +141,7 @@ def packet_mgmt(threadname):
      proc.stdin.close()
      proc.stderr.close()
      proc.wait()
-     file = path+str(calendar.timegm(time.gmtime()))+'_video.mp4'
+     file = abs_path+str(calendar.timegm(time.gmtime()))+'_video.mp4'
      print(file)
      command = [ '/usr/local/bin/ffmpeg',        #'-re',
         '-f', 'rawvideo', '-vcodec','rawvideo', '-s', ffmpeg_res,
@@ -148,5 +155,3 @@ thread2 = Thread( target=packet_mgmt, args=("Packet_mgmt", ) )
 
 thread1.start()
 thread2.start()
-
-  
