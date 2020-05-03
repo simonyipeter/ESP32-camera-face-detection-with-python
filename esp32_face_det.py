@@ -13,22 +13,24 @@ import pathlib
 
 last_seen_face_time = time.time() +5
 ffmpeg_recording = False
-config_str = "config,FRAMESIZE_VGA,12,400,1400"; #Send config: command, resulution, Jpeg quality, time between frames in ms, MTU size in byte
+PORT = 8080
+config_str = "config,FRAMESIZE_VGA,12,400,1400"; #Send config: command, resulution, Jpeg quality, time between frames in ms, UDP packet size in byte
 haar_path = "/usr/local/share/opencv4/haarcascades/haarcascade_frontalcatface.xml"
 
 abs_path = str( pathlib.Path(__file__).parent.absolute() )+"/"
-print(abs_path)
 pics = {}
 
 def capture(threadname):
- HOST = '0.0.0.0'      
- PORT = 443
- sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)    
- sock.bind((HOST, PORT))
- print ("Server running", HOST, PORT)
  global pics
  global last_seen_face_time
  global config_str
+ global PORT
+ 
+ HOST = '0.0.0.0'      
+ sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)    
+ sock.bind((HOST, PORT))
+ print ("Server running", HOST, PORT)
+ 
   
  while True:
   
@@ -155,3 +157,5 @@ thread2 = Thread( target=packet_mgmt, args=("Packet_mgmt", ) )
 
 thread1.start()
 thread2.start()
+
+  
