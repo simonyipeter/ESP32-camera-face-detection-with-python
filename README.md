@@ -13,11 +13,11 @@ Face ---> T-camera ESP32 with PIR ----- Image in UDP packets -----> python serve
 
 Face ---- T-camera ESP32 with PIR <--- Control message in UDP packets  --- python server
 
-This scenario is much slower than face detection on ESP32, but precise and versatile
+This scenario is much faster and more precise than face detection on ESP32.
 
 After the first boot ESP32 get the configuration from the server:
 Frame size, jpeg compression, time between the images, packet size
-it's possible to modify this configurations without restart or flash the ESP32.
+It's possible to modify this configurations without restart or flash the ESP32.
 
 # Requirement on server side:
 - Python 3
