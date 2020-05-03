@@ -3,7 +3,7 @@ For Demonstration Purposes Only!
 The code based on the demo code of TTgo T-camera ESP32
 
 # How it is work?
-The ESP32 send images back to a python server, which dectects faces on the image and send information to ESP32.
+The ESP32 sends images to a python server, which dectects faces on the image and sends information to ESP32.
 The code was written on LILYGO® TTgo T-camera ESP32 V17, but easy to modify to another version ESP32 camera board
 https://github.com/lewisxhe/esp32-camera-series
 
