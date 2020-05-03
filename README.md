@@ -58,5 +58,9 @@ udpPort - server port, default 8080
 
 - Upload the .ino and select_pins.h file to ESP32 board
 
+After the first boot ESP32 gets the configuration from the server:
+Frame size, jpeg compression, time between the images, UDP packet size
+It's possible to modify this configurations without restart or flash the ESP32.
+
 
 
