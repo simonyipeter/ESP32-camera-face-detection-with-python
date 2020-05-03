@@ -79,7 +79,7 @@ def packet_mgmt(threadname):
   proc = sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE, bufsize=10**8)
 
  # Load the cascade
- face_cascade = cv2.CascadeClassifier('/home/www/alarmstudiokft/haar.xml')
+ face_cascade = cv2.CascadeClassifier('haar.xml')
  
  while True:
 
