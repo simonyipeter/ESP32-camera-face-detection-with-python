@@ -1,44 +1,41 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <Wire.h>
-//#include <ArduinoJson.h>
 #include "esp_camera.h"
+#include "SSD1306.h"
 
 #define T_Camera_V17_VERSION
 #include "select_pins.h"
-
-#define SOFTAP_MODE       //The comment will be connected to the specified ssid
 
 #define WIFI_SSID   "xxx"
 #define WIFI_PASSWD "xxx"
 
 String ipAddress = "";
 
-const char * udpAddress = "1.2.3.4";
-const int udpPort = 8080;
+const char * udpAddress = "1.2.3.4";  // Python server address
+const int udpPort = 8080;                    // Python server port
 //The udp library class
 WiFiUDP udp;
 
-extern void startCameraServer();
-
-unsigned long lastPIR;
-unsigned long capture;
-unsigned long get_config;
+//timer varibales:
+unsigned long lastPIR;    
+unsigned long capture;    
+unsigned long get_config; 
 unsigned long get_info;
 unsigned long write2oled;
+unsigned long refresh_time = 800;
 
-uint8_t esp32_address[] =  {'0','1'}; 
+uint8_t esp32_address[] =  {'0','1'};       //Address of the ESP32, if you have more ESP32 modify it!
 uint8_t get_config_command[] =  {'8','8'}; 
 uint8_t get_info_command[] =  {'4','4'}; 
-unsigned long refresh_time = 800;
-uint16_t  packet_size = 1400;
 
-bool PIR_presents = false;
+uint16_t  packet_size = 1400;               //UDP packet's payload size
 
 String buffer_string_old ="";
 String info_string ="";
 
-#include "SSD1306.h"
+bool PIR_presents = false;
+
 #define SSD1306_ADDRESS 0x3c
 SSD1306 oled(SSD1306_ADDRESS, I2C_SDA, I2C_SCL, (OLEDDISPLAY_GEOMETRY)SSD130_MODLE_TYPE);
 
@@ -96,7 +93,6 @@ camera_config_t config;
 
 void setupNetwork()
 {
- 
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
     while (WiFi.status() != WL_CONNECTED) {        delay(300);        Serial.print(".");    }
@@ -104,8 +100,6 @@ void setupNetwork()
     Serial.println(F("WiFi connected"));
     Serial.print(F("IP address: "));  Serial.println(WiFi.localIP());    
     ipAddress = WiFi.localIP().toString();
-
-
 }
 //END setupNetwork
 
@@ -113,9 +107,9 @@ void get_config_from_server(){
      udp.beginPacket(udpAddress, udpPort);
      udp.write(esp32_address, 2); udp.write( get_config_command, 2); 
      udp.endPacket();
-     Serial.println("Send config command");
+     Serial.println(F("Send config command"));
 
-     uint8_t buffer[50] = "sta";   memset(buffer, 0, 50);
+     uint8_t buffer[50] = "xxx";   memset(buffer, 0, 50);
      udp.parsePacket();
      //receive response from server
      if(udp.read(buffer, 50) > 0){
@@ -180,14 +174,13 @@ void get_info_from_server(){
      udp.endPacket();
      //Serial.println("Send info command");
 
-     uint8_t buffer[50] = "sta";     memset(buffer, 0, 50);
+     uint8_t buffer[50] = "xxx";     memset(buffer, 0, 50);
      //processing incoming packet, must be called before reading the buffer
      udp.parsePacket();
      //receive response from server
      if(udp.read(buffer, 50) > 0 && getValue((char *)buffer, ',', 0) == "info" ){
      //Serial.print("Server to client: ");
-      Serial.println((char *)buffer);
-      info_string = getValue((char *)buffer, ',', 1);
+      Serial.println((char *)buffer);      info_string = getValue((char *)buffer, ',', 1);
      }
      else{      info_string = "";      }
      
@@ -203,7 +196,7 @@ void setup() {
 
   pinMode(AS312_PIN, INPUT);
 
-  bool status;  status = setupCamera();  Serial.print("setupCamera status "); Serial.println(status);
+  bool status;  status = setupCamera();  Serial.print(F("setupCamera status ")); Serial.println(status);
 
   setupNetwork();
 
@@ -218,21 +211,17 @@ void loop() {
   if(WiFi.status() == WL_CONNECTED){
     
     if ( PIR_presents == true && (millis() - capture)> refresh_time ) {              capture = millis();                      
-      camera_fb_t *fb = NULL;      fb = esp_camera_fb_get();    if (!fb) {   Serial.printf("Camera capture failed");  }
-      //Serial.println("Send UDP one JPG...");
+      camera_fb_t *fb = NULL;      fb = esp_camera_fb_get();    if (!fb) {   Serial.printf("Camera capture failed");  }      //Serial.println("Send UDP one JPG...");
       uint8_t fragments =  (uint8_t)( (uint32_t)fb->len / packet_size ) + 1; 
       uint8_t img_id[] =  {random(1, 255),random(1, 255)}; 
       
-      Serial.printf("F: %u db, %u B\n", fragments, (uint32_t)(fb->len));
+      Serial.printf("Packets: %u, %u Byte\n", fragments, (uint32_t)(fb->len));
        for (uint8_t i = 1; i <= fragments; i++) {        
         udp.beginPacket(udpAddress, udpPort);
         udp.write(esp32_address, 2);    udp.write(img_id, 2);          udp.write(fragments);      udp.write(i);
         if (i==1){ udp.write(fb->buf[0]); }
         for (uint16_t j = (i-1)*packet_size+1; (j <= i*packet_size) && (j <= (uint16_t)fb->len ); j++) {   udp.write(fb->buf[j]);  /*Serial.printf("%u: %u\n", i, j);  */       }
-        //Serial.printf("Frag: %u db\n", fb->buf[1300]);
-        udp.endPacket();
-       }
-      //Serial.printf("JPG: %u B\n", (uint32_t)(fb->len));
+        udp.endPacket();       }
       esp_camera_fb_return(fb);
     }
 
@@ -244,7 +233,7 @@ void loop() {
  
   if (digitalRead(AS312_PIN)) {               lastPIR = millis();            }
   if (millis() - lastPIR < 6000) {   PIR_presents = true;   }
-  if (millis() - lastPIR > 6000) {   PIR_presents = false;  if (millis() - lastPIR > 60000) { lastPIR = millis();    } }
+  if (millis() - lastPIR > 6000) {   PIR_presents = false;  if (millis() - lastPIR > 30000) { lastPIR = millis();    } }
 
   if (  (millis() - write2oled)>300) {              write2oled = millis();      
       oled.clear();
