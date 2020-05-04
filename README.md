@@ -9,9 +9,9 @@ https://github.com/lewisxhe/esp32-camera-series
 
 Hopefully there is a PIR on this board, so it only sends image, when motian was detected.
 
-Face ---> T-camera ESP32 with PIR ----- Image in UDP packets -----> python server
+Image ---> T-camera ESP32 with PIR ----- Image in UDP packets -----> python server
 
-Face ---- T-camera ESP32 with PIR <--- Control message in UDP packets  --- python server
+Image ---- T-camera ESP32 with PIR <--- Control message in UDP packets  --- python server
 
 This scenario is more precise than face detection on ESP32.
 
